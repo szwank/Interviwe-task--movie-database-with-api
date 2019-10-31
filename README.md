@@ -1,6 +1,6 @@
 **Description**
 
-Application for comparing movies. Only movies that are in the program database will be compared. Movies can be added by title. Only one functionality can to be executed at once. If the base have rows with only titles it will automaticly fetch rest of the data at first start.
+Application for comparing movies. Only movies that are in the program database will be compared. Movies can be added by title. Only one functionality can to be executed at once. If the base have rows with only titles (this is the state of thatabase in the begining) it will automaticly fetch rest of the data at first start.
 
 **Requirements**
 
