@@ -2,13 +2,12 @@ import sqlite3
 import time
 from sqlite3 import Error
 from SQLiteDatabase import SQLiteDatabase
-
-import threading
-import json
 from MovieEntity import MovieEntity
 from Utils import Utils
 import concurrent.futures
 import multiprocessing
+from ProgressPrinter import ProgressPrinter
+
 
 class Movies(SQLiteDatabase):
     """Row of MOVIES table:"""
@@ -26,41 +25,53 @@ class Movies(SQLiteDatabase):
     def populate_movies(self):
         self.__initiate_tables()
         movies_titles = self.get_titles_of_unfilled_movies()
+        if len(movies_titles) == 0:
+            return None
+
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=10)
         m = multiprocessing.Manager()
         lock = m.RLock()
+        progress_bar = ProgressPrinter(len(movies_titles))
         future = [pool.submit(self.__update_movie, *title, lock) for title in movies_titles]
 
         for f in future:    # checking if task done
             while f.done() == False:
                 time.sleep(0.1)
+            progress_bar.update()
 
-    def add_movie_by_titles(self, titles: list):
+    def add_movies_by_titles(self, titles: list) -> None:
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+        unque_titles = set(titles)
         m = multiprocessing.Manager()
         lock = m.RLock()
-        future = [pool.submit(self.__get_data_and_insert_movie, title, lock) for title in titles]
+        progress_bar = ProgressPrinter(total=len(unque_titles))
+        future = [pool.submit(self.__get_data_and_insert_movie, title, lock) for title in unque_titles]
+
 
         for f in future:  # checking if task done
             while f.done() == False:
                 time.sleep(0.1)
+            progress_bar.update()
+
+        for thread in future:
+            if thread.result() is not None:
+                print(thread.result())
 
     def __get_data_and_insert_movie(self, movie_title, lock):
         result = Utils.fetch_movie_data(movie_title)
         if result.get('Response') == 'False':
-            print("Movie with title {} not found in API omdbapi. Movie won't be added.".format(movie_title))
-            return None
+            return "Movie with title {} not found in API omdbapi. Movie won't be added.".format(movie_title)
         movie = MovieEntity()
         movie.load_from_data(result)
         self.__add_movie(movie, lock)
+
 
     def __add_movie(self, movie: MovieEntity, lock):
         connection = self.create_connection()
         with lock:
             result = connection.execute('SELECT Title FROM Movie_attributes WHERE Title = :title', movie.get_dict()).fetchone()
         if result is not None:
-            print("Movie {} already in database.".format(movie.Title))
-            return None
+            return "Movie {} already in database.".format(movie.Title)
         with lock:
             connection.execute('Insert INTO {} (Title, Year, Runtime, Genre, Director, Cast, Writer, Language, Country,\
                                 Awards, IMDb_rating, IMDB_votes, Box_office) VALUES (:title, :year, :runtime, :genre,\
@@ -70,6 +81,7 @@ class Movies(SQLiteDatabase):
             self.commit(connection)
         self.close_connection(connection)
         self.__fill_rest_of_the_tables(movie, lock)
+        return 'Movie {} added.'.format(movie.Title)
 
     def __initiate_tables(self):
         connection = self.create_connection()
@@ -196,15 +208,14 @@ class Movies(SQLiteDatabase):
             connection.executemany('INSERT INTO Actors VALUES (?, ?)', records)
             connection.commit()
 
-        print(movie.get_dict())
         self.close_connection(connection)
 
-    def compare_by(self, category, titles):
+    def get_best_one_from_category(self, category: str, titles: (list, tuple)):
         if category == 'All_awards_won':
             category = 'Won_oscars + Another_wins'
         query_safety_filler = Utils.get_question_marks(len(titles), ', ')
-
         connection = self.create_connection()
+
         result = connection.execute('SELECT Title, MAX({}) FROM Movie_attributes WHERE Title in ({})'.format(category, query_safety_filler), titles)
         result = result.fetchall()
         self.close_connection(connection)
@@ -279,32 +290,32 @@ class Movies(SQLiteDatabase):
             if element == "Country":
                 where.append('Country.Name = :Country AND ')
                 left_join.append('JOIN Country on Movie_attributes.ID = Country.Movie_ID ')
-                select.append('GROUP_CONCAT(Country.Name), ')
+                select.append('GROUP_CONCAT( DISTINCT Country.Name), ')
 
             elif element == 'Director':
                 where.append('Director.Name = :Director AND ')
                 left_join.append('JOIN Director on Movie_attributes.ID = Director.Movie_ID ')
-                select.append('GROUP_CONCAT(Director.Name), ')
+                select.append('GROUP_CONCAT( DISTINCT Director.Name), ')
 
             elif element == 'Genre':
                 where.append('Genre.Name = :Genre AND ')
                 left_join.append('JOIN Genre on Movie_attributes.ID = Genre.Movie_ID ')
-                select.append('GROUP_CONCAT(Genre.Name), ')
+                select.append('GROUP_CONCAT( DISTINCT Genre.Name), ')
 
             elif element == 'Language':
                 where.append('Language.Name = :Language AND ')
                 left_join.append('JOIN Language on Movie_attributes.ID = Language.Movie_ID ')
-                select.append('GROUP_CONCAT(Language.Name), ')
+                select.append('GROUP_CONCAT( DISTINCT Language.Name), ')
 
             elif element == 'Writer':
                 where.append('Writer.Name = :Writer AND ')
                 left_join.append('JOIN Writer on Movie_attributes.ID = Writer.Movie_ID ')
-                select.append('GROUP_CONCAT(Writer.Name), ')
+                select.append('GROUP_CONCAT( DISTINCT Writer.Name), ')
 
             elif element == 'Actor':
                 where.append('Cast.Name = :Cast AND ')
                 left_join.append('JOIN Cast on Movie_attributes.ID = Cast.Movie_ID ')
-                select.append('GROUP_CONCAT(Cast.Name), ')
+                select.append('GROUP_CONCAT( DISTINCT Cast.Name), ')
 
             elif element == 'Earn_more_than':
                 where.append('Movie_attributes.Box_office > :Earn_more_than AND ')
