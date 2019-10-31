@@ -1,6 +1,6 @@
 **Description**
 
-Application for comparing movies. Only movies that are in the program database will be compared. Movies can be added by title. Only one functionality can to be executed at once. If the base have rows with only titles (this is the state of thatabase in the begining) it will automaticly fetch rest of the data at first start.
+Application for comparing movies. Only movies that are in the program database will be compared. Movies can be added by title. Only one functionality can to be executed at once. If the base have rows with only titles (this is the state of thatabase in the begining) it will automaticly fetch rest of the data at first start. In repository is empty data base having only movie titles called movies empty.
 
 **Requirements**
 
@@ -46,6 +46,12 @@ Available commands:
 ---
 * -hs, --highscores 
 >Command returns highscores with movie titles from data base in categories: runtime, box office earnings, most awards won (count ostars and others awards), most nominations (count ostars and others awards), most oscars, highest IMDB rating
+
+**Example commands**
+
+python main.py -hs
+python mian.py -s Title Actors Genre
+python main.py -f Genre Action -f Language Spanish
 
 
 
