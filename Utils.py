@@ -1,6 +1,9 @@
 import requests
 import re
-
+import locale
+locale.setlocale(locale.LC_NUMERIC, "")
+import sys
+from StringFormator import StringFormator
 
 class Utils:
 
@@ -81,10 +84,57 @@ class Utils:
 
     @staticmethod
     def remove_brackets_with_content(text: str):
-        """Content is removet with brackets and space before bracket if there is any."""
+        """Content is removed with brackets and space before bracket if there is one."""
         pattern = r' ?\(.*?\)'
 
         return re.sub(pattern, '', text)
+
+    @staticmethod
+    def format_num(num):
+        """Format a number according to given places.
+        Adds commas, etc. Will truncate floats into ints!"""
+
+        try:
+            inum = int(num)
+            return locale.format_string("%.*f", (0, inum), True)
+
+        except (ValueError, TypeError):
+            return str(num)
+
+    @staticmethod
+    def get_max_width(table, index):
+        """Get the maximum width of the given column index"""
+        return max([len(Utils.format_num(row[index])) for row in table])
+
+    @staticmethod
+    def print_one_row(data: (list, tuple), col_paddings: (list, tuple)) -> None:
+        line = '| '
+        print('| ', end='')
+
+        for i, column in enumerate(data):
+            col = Utils.format_num(column).center(col_paddings[i] + 2)
+            print(StringFormator.BOLD, col, StringFormator.END, end=" | ")
+            line += "-" * (col_paddings[i] + 4) + " | "
+
+        print('\n', line)
+
+    @staticmethod
+    def print_movies_data(data: (list,tuple), headers: list) -> None:
+        """Prints out a table of data, padded for alignment
+        @param out: Output stream (file-like object)
+        @param table: The table to print. A list of lists.
+        Each row must have the same number of columns. """
+        col_paddings = []
+
+        for i in range(len(data[0])):
+            col_paddings.append(Utils.get_max_width(headers + data, i))
+
+        Utils.print_one_row(headers, col_paddings)
+
+        for row in data:
+            Utils.print_one_row(row, col_paddings)
+
+
 
 
 
