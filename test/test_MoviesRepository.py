@@ -35,7 +35,6 @@ def test_compare_by():
     movies.create_connection = mock.Mock(return_value=mock_connection)
     movies.close_connection = mock.Mock()
     mock_cursor = mock.Mock()
-
     mock_connection.execute.return_value = mock_cursor
     mock_cursor.fetchall.return_value = [(1, 'Foo')]
 
