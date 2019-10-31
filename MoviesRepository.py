@@ -9,7 +9,7 @@ import multiprocessing
 from ProgressPrinter import ProgressPrinter
 
 
-class Movies(SQLiteDatabase):
+class MoviesRepository(SQLiteDatabase):
     """Row of MOVIES table:"""
     """ID, Title, Year, Runtime, Genere, Director, Cast, Writer, Language, Country, Awards, IMDb_rating, IMDb_votes, Box_office"""
     def __init__(self, path_to_database):
@@ -349,7 +349,7 @@ class Movies(SQLiteDatabase):
         return result
 
     def get_all_unfilled_rows_from_table(self, *unfilled_rows):
-        return super(Movies, self).get_all_unfilled_rows_from_table(self.Movies_table, *unfilled_rows)
+        return super(MoviesRepository, self).get_all_unfilled_rows_from_table(self.Movies_table, *unfilled_rows)
 
     def get_titles_of_unfilled_movies(self):
         connection = self.create_connection()

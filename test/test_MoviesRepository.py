@@ -1,36 +1,23 @@
 import pytest
-from Movies import Movies
+from MoviesRepository import MoviesRepository
 from unittest.mock import patch
 from unittest import mock
 
 
 def test_init():
-    movies = Movies(':memory:')
+    movies = MoviesRepository(':memory:')
     assert movies.path_to_database == ':memory:'
 
 
 @patch('sqlite3.connect')
 def test_create_connection(mock_connect):
-    movies = Movies(':memory:')
+    movies = MoviesRepository(':memory:')
     movies.create_connection()
     mock_connect.assert_called_once_with(':memory:', timeout=5, isolation_level='DEFERRED')
 
 
-def test_populate_movies():
-    movies = Movies(':memory:')
-    movies.__update_movie = mock.Mock()
-    movies.__initiate_tables = mock.Mock()
-
-    movies.get_titles_of_unfilled_movies = mock.Mock()
-    movies.populate_movies()
-
-    movies.__initiate_tables.assert_called_once_with()
-    movies.get_titles_of_unfilled_movies.return_value = lambda: [('Foo',), ('Boo',)]
-    movies.__update_movie.assert_has_calls([('Foo',), ('Boo',)])
-
-
 def test_compare_by():
-    movies = Movies(':memory:')
+    movies = MoviesRepository(':memory:')
     mock_connection = mock.Mock()
     movies.create_connection = mock.Mock(return_value=mock_connection)
     movies.close_connection = mock.Mock()
@@ -48,7 +35,7 @@ def test_compare_by():
         'SELECT Title, MAX(Won_oscars + Another_wins) FROM Movie_attributes WHERE Title in (?, ?)', ['Foo', 'Boo'])
 
 def test_get_sorted_by():
-    movies = Movies(':memory:')
+    movies = MoviesRepository(':memory:')
     mock_connection = mock.Mock()
     movies.create_connection = mock.Mock(return_value=mock_connection)
     movies.close_connection = mock.Mock()
@@ -62,7 +49,7 @@ def test_get_sorted_by():
     movies.close_connection.assert_called_once_with(mock_connection)
 
 def test_filter_by():
-    movies = Movies(':memory:')
+    movies = MoviesRepository(':memory:')
     mock_connection = mock.Mock()
     movies.create_connection = mock.Mock(return_value=mock_connection)
     movies.close_connection = mock.Mock()
@@ -80,7 +67,7 @@ def test_filter_by():
 
 
 def test_get_movies_witch_won_nominations_more_than():
-    movies = Movies(':memory:')
+    movies = MoviesRepository(':memory:')
     mock_connection = mock.Mock()
     movies.create_connection = mock.Mock(return_value=mock_connection)
     movies.close_connection = mock.Mock()
@@ -95,7 +82,7 @@ def test_get_movies_witch_won_nominations_more_than():
 
 
 def test_get_movies_that_was_nominated_for_oscar_but_dont_win_any():
-    movies = Movies(':memory:')
+    movies = MoviesRepository(':memory:')
     mock_connection = mock.Mock()
     movies.create_connection = mock.Mock(return_value=mock_connection)
     movies.close_connection = mock.Mock()
@@ -109,7 +96,7 @@ def test_get_movies_that_was_nominated_for_oscar_but_dont_win_any():
     movies.close_connection.assert_called_once_with(mock_connection)
 
 def test_get_titles_of_unfilled_movies():
-    movies = Movies(':memory:')
+    movies = MoviesRepository(':memory:')
     mock_connection = mock.Mock()
     movies.create_connection = mock.Mock(return_value=mock_connection)
     movies.close_connection = mock.Mock()
@@ -123,7 +110,7 @@ def test_get_titles_of_unfilled_movies():
     movies.close_connection.assert_called_once_with(mock_connection)
 
 def test_highscores():
-    movies = Movies(':memory:')
+    movies = MoviesRepository(':memory:')
     mock_connection = mock.Mock()
     movies.create_connection = mock.Mock(return_value=mock_connection)
     movies.close_connection = mock.Mock()

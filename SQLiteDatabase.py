@@ -55,3 +55,5 @@ class SQLiteDatabase:
         result = cursor.fetchall()
         connection.close()
         return result
+
+

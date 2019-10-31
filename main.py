@@ -1,7 +1,7 @@
 import argparse
 from Range import Range
 from Utils import Utils
-from Movies import Movies
+from MoviesRepository import MoviesRepository
 
 
 parser = argparse.ArgumentParser(description='Application for comparing movies. Only movies that are in the program\
@@ -71,7 +71,7 @@ def print_result(result):
 
 
 def main(args):
-    movies = Movies('movies.sqlite')
+    movies = MoviesRepository('movies.sqlite')
     movies.populate_movies()
 
     if args.sort_by:
