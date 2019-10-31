@@ -129,6 +129,8 @@ class MovieEntity:
         return result
 
     def __to_integer(self, text: str):
+        if text is None:
+            return None
         text = self.__remove_text(text)
         if text is '':
             return None
@@ -148,7 +150,7 @@ class MovieEntity:
         return {'id': self.ID, 'title': self.Title, 'year': self.Year, 'runtime': self.Runtime, 'genre': self.Genre,
                 'director': self.Director, 'cast': self.Cast, 'writer': self.Writer, 'language': self.Language,
                 'country': self.Country, 'awards': self.Awards, 'imdb_rating': self.IMDb_rating,
-                'imdb_votes': self.IMDb_votes, 'box_office': self.Box_office, }
+                'imdb_votes': self.IMDb_votes, 'box_office': self.Box_office}
 
 
 
