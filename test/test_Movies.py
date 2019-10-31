@@ -16,10 +16,11 @@ def test_create_connection(mock_connect):
     mock_connect.assert_called_once_with(':memory:', timeout=5, isolation_level='DEFERRED')
 
 
-def populate_movies():
+def test_populate_movies():
     movies = Movies(':memory:')
     movies.__update_movie = mock.Mock()
     movies.__initiate_tables = mock.Mock()
+
     movies.get_titles_of_unfilled_movies = mock.Mock()
     movies.populate_movies()
 
@@ -38,12 +39,12 @@ def test_compare_by():
     mock_connection.execute.return_value = mock_cursor
     mock_cursor.fetchall.return_value = [(1, 'Foo')]
 
-    assert movies.compare_by('Runtime', ['Foo', 'Boo']) == [(1, 'Foo')]
+    assert movies.get_best_one_from_category('Runtime', ['Foo', 'Boo']) == [(1, 'Foo')]
     movies.create_connection.assert_called_once_with()
     mock_cursor.fetchall.assert_called_once_with()
     mock_connection.execute.called_once()
     movies.close_connection.assert_called_once_with(mock_connection)
-    movies.compare_by('All_awards_won', ['Foo', 'Boo']) == [(1, 'Foo')]
+    movies.get_best_one_from_category('All_awards_won', ['Foo', 'Boo']) == [(1, 'Foo')]
     mock_connection.execute.called_once_with(
         'SELECT Title, MAX(Won_oscars + Another_wins) FROM Movie_attributes WHERE Title in (?, ?)', ['Foo', 'Boo'])
 
