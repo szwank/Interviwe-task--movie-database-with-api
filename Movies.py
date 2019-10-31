@@ -202,10 +202,10 @@ class Movies(SQLiteDatabase):
     def compare_by(self, category, titles):
         if category == 'All_awards_won':
             category = 'Won_oscars + Another_wins'
-        question_marks = Utils.get_question_marks(len(titles), ', ')
+        query_safety_filler = Utils.get_question_marks(len(titles), ', ')
 
         connection = self.create_connection()
-        result = connection.execute('SELECT Title, MAX({}) FROM Movie_attributes WHERE Title in ({})'.format(category, question_marks), titles)
+        result = connection.execute('SELECT Title, MAX({}) FROM Movie_attributes WHERE Title in ({})'.format(category, query_safety_filler), titles)
         result = result.fetchall()
         self.close_connection(connection)
         return result
@@ -220,7 +220,7 @@ class Movies(SQLiteDatabase):
         self.commit(connection)
         self.close_connection(connection)
 
-    def get_sorted_by(self, *sorted_by):
+    def get_sorted_by(self, *sorted_by: str):
         order_by = []
         left_join = []
         select = ['Movie_attributes.Title, ']
@@ -270,7 +270,7 @@ class Movies(SQLiteDatabase):
         self.close_connection(connection)
         return result
 
-    def get_fitter_by(self, filter_by):
+    def get_fitter_by(self, filter_by: dict):
         where = []
         left_join = []
         select = ['Movie_attributes.Title, ']
