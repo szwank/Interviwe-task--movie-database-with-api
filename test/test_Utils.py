@@ -90,5 +90,16 @@ def test_is_number():
     with pytest.raises(TypeError):
         Utils.is_number(123)
 
+def test_remove_bracket_content():
+    string = 'Foo (asd) Foo'
+    string2 = 'Foo(asd)Foo'
+    string3 = 'Foo()Foo'
+    result1 = 'Foo Foo'
+    result2 = 'FooFoo'
+
+    assert Utils.remove_brackets_with_content(string) == result1
+    assert Utils.remove_brackets_with_content(string2) == result2
+    assert Utils.remove_brackets_with_content(string3) == result2
+
 
 

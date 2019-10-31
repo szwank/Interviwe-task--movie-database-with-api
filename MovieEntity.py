@@ -23,42 +23,48 @@ class MovieEntity:
     @property
     def separated_directors(self):
         if self.Director is not None:
-            return self.Director.split(', ')
+            directors = Utils.remove_brackets_with_content(self.Director)
+            return directors.split(', ')
         else:
             return None
 
     @property
     def separated_countries(self):
         if self.Country is not None:
-            return self.Country.split(', ')
+            countries = Utils.remove_brackets_with_content(self.Country)
+            return countries.split(', ')
         else:
             return None
 
     @property
     def separated_genres(self):
         if self.Genre is not None:
-            return self.Genre.split(', ')
+            genres = Utils.remove_brackets_with_content(self.Genre)
+            return genres.split(', ')
         else:
             return None
 
     @property
     def separated_cast(self):
         if self.Cast is not None:
-            return self.Cast.split(', ')
+            casts = Utils.remove_brackets_with_content(self.Cast)
+            return casts.split(', ')
         else:
             return None
 
     @property
     def separated_languages(self):
         if self.Language is not None:
-            return self.Language.split(', ')
+            languages = Utils.remove_brackets_with_content(self.Language)
+            return languages.split(', ')
         else:
             return None
 
     @property
     def separated_writers(self):
         if self.Writer is not None:
-            return self.Writer.split(', ')
+            writesrs = Utils.remove_brackets_with_content(self.Writer)
+            return writesrs.split(', ')
         else:
             return None
 

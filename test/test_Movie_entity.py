@@ -44,5 +44,7 @@ def test_properties():
     assert movie_entity.separated_countries == ["USA", 'Foo']
     assert movie_entity.separated_genres == ["Animation", "Adventure", "Comedy", "Family", "Fantasy"]
     assert movie_entity.separated_cast == ["Mike Myers", "Eddie Murphy", "Cameron Diaz", "John Lithgow"]
-    assert movie_entity.separated_languages == ["English, Foo"]
-    assert movie_entity.separated_writers == ["William Steig (based upon the book by), Ted Elliott, Terry Rossio, Joe Stillman, Roger S.H. Schulman, Cody Cameron (additional dialogue), Chris Miller (additional dialogue), Conrad Vernon (additional dialogue)"]
+    assert movie_entity.separated_languages == ["English", "Foo"]
+    assert movie_entity.separated_writers == ["William Steig", "Ted Elliott", "Terry Rossio", "Joe Stillman", "Roger S.H. Schulman", "Cody Cameron", "Chris Miller", "Conrad Vernon"]
+    assert movie_entity.separated_awards == {'won_oscars': 1, 'oscars_nomination': 0, 'another_wins': 36, 'another_nominations': 60}
+

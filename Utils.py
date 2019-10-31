@@ -80,18 +80,11 @@ class Utils:
             return False
 
     @staticmethod
-    def remove_brackets_content(text: str):
-        splited_text = text.split(' ')
-        to_remove = []
-        for i, element in enumerate(splited_text):
-            if element[0] == '(':
-                bracket_position.append((element[0], i))
-            elif element[-1] in ('(', ')'):
-                bracket_position.append((element[-1], i))
+    def remove_brackets_with_content(text: str):
+        """Content is removet with brackets and space before bracket if there is any."""
+        pattern = r' ?\(.*?\)'
 
-        to_remove = []
-
-        for element in bracket_position:
+        return re.sub(pattern, '', text)
 
 
 
