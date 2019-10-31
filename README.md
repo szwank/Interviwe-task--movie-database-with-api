@@ -49,9 +49,9 @@ Available commands:
 
 **Example commands**
 
-python main.py -hs
-python mian.py -s Title Actors Genre
-python main.py -f Genre Action -f Language Spanish
+* python main.py -hs
+* python mian.py -s Title Actors Genre
+* python main.py -f Genre Action -f Language Spanish
 
 
 
